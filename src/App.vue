@@ -1,15 +1,45 @@
 <template>
-  <img alt="Vue logo" src="./assets/logo.png">
-  <HelloWorld msg="Welcome to Your Vue.js App"/>
+  <h1>
+    Hello Vue3 & WeiXin JS-SDK
+    <br/>
+    <button @click="handleClick()">click me </button>
+  </h1>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import axios from 'axios';
+const wxJssdkConfigUrl = `${process.env.VUE_APP_API_URL}/wx-jssdk-config`;
 
 export default {
   name: 'App',
   components: {
-    HelloWorld
+  },
+  mounted() {
+    axios.get(wxJssdkConfigUrl, {
+      params: {
+        url: window.location.href,
+      },
+    }).then(response => {
+      const { appId, timestamp, nonceStr, signature } = response.data;
+      this.$wechat.config({
+          debug: true,
+          appId,
+          timestamp,
+          nonceStr,
+          signature,
+          jsApiList: ['updateAppMessageShareData', 'updateTimelineShareData']
+        })
+        this.$wechat.ready(() => {
+          console.log('wx-js-sdk is ready')
+        })
+    })
+  },
+  methods: {
+    handleClick() {
+        this.$wechat.updateAppMessageShareData({
+          
+        })
+    }
   }
 }
 </script>
